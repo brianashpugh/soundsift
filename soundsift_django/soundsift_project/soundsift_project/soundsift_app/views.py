@@ -3,7 +3,7 @@ from django.template import loader, RequestContext
 from django.http import HttpResponse
 import urllib2
 import requests
-import heapq
+from heapq import heappush, heappop
 import soundcloud
 from ..settings import ECHONEST_API_KEY, ECHONEST_CONSUMER_KEY
 from pyechonest import config
@@ -18,6 +18,8 @@ def renderEntryPage(request):
     fil = open(root_directory + '/soundsift_app/web/main.html')
     return HttpResponse(fil)
 
+#This takes in the Souncloud username and returns a dictionary with corresponding SC information about the users'
+# artists that he follows
 def processUsername(request):
     username_dict = request.POST.dict()
     username = username_dict["sc-name-in"]
@@ -55,77 +57,47 @@ def processUsername(request):
 # img_src: the artist's sc img
 def echonestInfoFetch(artist_list):
     resultant_list = []
-    resultant_dictionary = {}
-    for artist in artist_list:
-        artist_object = artist.Artist(artist_name)
-        if not artist_object:
+    for artist_dict in artist_list:
+        resultant_dictionary = {}
+        try:
+            artist_object = artist.Artist(artist_dict["artist_user_name"])
+        except pyechonest.util.EchoNestAPIError:
             continue
         artist_name = str(artist_object)
         resultant_dictionary["artist_name"] = artist_name
-        news_dict = artist.news
+        news_dict = None if len(artist_object.news) == 0 else artist_object.news[0]
+        if not news_dict:
+            continue
         resultant_dictionary["news_title"] = news_dict["name"]
         resultant_dictionary["news_content"] = news_dict["summary"]
         resultant_dictionary["news_url"] = news_dict["url"]
-        resultant_dictionary["img_src"] = artist["img_src"]
+        resultant_dictionary["img_src"] = artist_dict["img_src"]
         resultant_dictionary["hotttnesss"] = artist_object.get_hotttnesss()
         resultant_list.append(resultant_dictionary)
     return resultant_list
 
-def hotttFilter(resultant_list):
+#this takes in a list of the artist's info (including the news content/title of most recent article as well)
+# and returns a list of the top LIMIT most popular artists as determined by "hotttness" level
+def hotttFilter(resultant_list, limit):
     #flips the order of the prio queue so those with the highest hotttness are brought to the front
-    queue = PriorityQueueWithFunction(lambda x: -x[1])
+    queue = []
     for artist_dict in resultant_list:
-        queue.push(artist_dict, artist_dict["hotttnesss"])
+        heappush(queue, (-artist_dict["hotttnesss"], artist_dict))
     count = 0
     most_popular_list = []
-    while count < 20:
-        most_popular_list.append(queue.pop())
+    while count < limit:
+        item  = heappop(queue)
+        most_popular_list.append(item)
+        count += 1
     return most_popular_list
 
-class PriorityQueue:
-    """
-      Implements a priority queue data structure. Each inserted item
-      has a priority associated with it and the client is usually interested
-      in quick retrieval of the lowest-priority item in the queue. This
-      data structure allows O(1) access to the lowest-priority item.
 
-      Note that this PriorityQueue does not allow you to change the priority
-      of an item.  However, you may insert the same item multiple times with
-      different priorities.
-    """
-    def  __init__(self):
-        self.heap = []
-        self.count = 0
-
-    def push(self, item, priority):
-        entry = (priority, self.count, item)
-        # entry = (priority, item)
-        heapq.heappush(self.heap, entry)
-        self.count += 1
-    def len(self):
-        return len(self.heap)
-    def pop(self):
-        (_, _, item) = heapq.heappop(self.heap)
-        #  (_, item) = heapq.heappop(self.heap)
-        return item
-
-    def isEmpty(self):
-        return len(self.heap) == 0
-
-class PriorityQueueWithFunction(PriorityQueue):
-    """
-    Implements a priority queue with the same push/pop signature of the
-    Queue and the Stack classes. This is designed for drop-in replacement for
-    those two classes. The caller has to provide a priority function, which
-    extracts each item's priority.
-    """
-    def  __init__(self, priorityFunction):
-        "priorityFunction (item) -> priority"
-        self.priorityFunction = priorityFunction      # store the priority function
-        PriorityQueue.__init__(self)        # super-class initializer
-
-    def push(self, item):
-        "Adds an item to the queue with priority from the priority function"
-        PriorityQueue.push(self, item, self.priorityFunction(item))
+# This takes in the soundcloud user's username and returns a list of the past LIMIT artists who's tracks the user has
+# liked and who is in the user's FOLLOWED_ARTISTS
+def recentlyFavoritedArtists(username, followed_artists, limit):
+    offset_limit = 0
+    while True:
+        
+    followings = client.get('users/' + username + '/followings', offset=limit)
 
 # Create your views here.
