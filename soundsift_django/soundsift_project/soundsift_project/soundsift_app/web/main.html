@@ -17,7 +17,7 @@
 		<img src="{% static "cloud.png" %}" class="cloud">
 		<form class="sc-name" method="POST" action="process_username">{% csrf_token %}
 			<label for="sc-name-in">it's</label>
-			<input type="text" name="name" class="sc-name-in" id="sc-name-in" value="{{default_value}}"></input>
+			<input type="text" name="name" class="sc-name-in" id="sc-name-in"></input>
 		</form>
 	</div>
 </body>

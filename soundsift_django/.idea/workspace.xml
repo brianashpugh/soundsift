@@ -38,9 +38,11 @@
       <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.19305019" vertical-offset="0" max-vertical-offset="1710">
-              <caret line="10" column="37" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
-              <folding />
+            <state vertical-scroll-proportion="-0.023166023" vertical-offset="933" max-vertical-offset="1710">
+              <caret line="61" column="30" selection-start-line="57" selection-start-column="0" selection-end-line="61" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#55#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -49,7 +51,7 @@
         <entry file="file://$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/web/main.html">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="435">
-              <caret line="19" column="100" selection-start-line="19" selection-start-column="100" selection-end-line="19" selection-end-column="100" />
+              <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
               <folding />
             </state>
           </provider>
@@ -102,8 +104,8 @@
         <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/requirements.txt" />
         <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/urls.py" />
         <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/settings.py" />
-        <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/web/main.html" />
         <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/views.py" />
+        <option value="$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/web/main.html" />
       </list>
     </option>
   </component>
@@ -535,16 +537,18 @@
     <entry file="file://$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/web/main.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="435">
-          <caret line="19" column="100" selection-start-line="19" selection-start-column="100" selection-end-line="19" selection-end-column="100" />
+          <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soundsift_project/soundsift_project/soundsift_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.19305019" vertical-offset="0" max-vertical-offset="1710">
-          <caret line="10" column="37" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
-          <folding />
+        <state vertical-scroll-proportion="-0.023166023" vertical-offset="933" max-vertical-offset="1710">
+          <caret line="61" column="30" selection-start-line="57" selection-start-column="0" selection-end-line="61" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
