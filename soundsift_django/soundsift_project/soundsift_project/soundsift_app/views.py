@@ -96,8 +96,8 @@ def hotttFilter(resultant_list, limit):
 # liked and who is in the user's FOLLOWED_ARTISTS
 def recentlyFavoritedArtists(username, followed_artists, limit):
     offset_limit = 0
+    favorite_artist_counts = {}
     while True:
-        
-    followings = client.get('users/' + username + '/followings', offset=limit)
+        favorites = client.get('users/' + username + '/favorites', offset=limit)
 
 # Create your views here.
