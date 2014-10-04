@@ -27,7 +27,6 @@ SECRET_KEY = 'a6id0q6fbknk*my%*j!4^rgj@5551i9x6m8gc7vf%!i$puo3_u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -87,5 +86,5 @@ USE_TZ = True
 SITE_ID = "soundsift.co"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'

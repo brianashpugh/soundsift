@@ -3,6 +3,9 @@ from django.contrib import admin
 from soundsift_app.views import renderEntryPage, processUsername
 import sys
 print sys.path
+import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = patterns('',
     # Example:
@@ -15,5 +18,5 @@ urlpatterns = patterns('',
     # (r'^admin/', include(admin.site.urls)),
     #soundsift.com/
     (r'^entry_page/$', 'soundsift_project.soundsift_app.views.renderEntryPage'),
-    (r'^process_username$', processUsername),
-    )
+    (r'^entry_page/process_username$', 'soundsift_project.soundsift_app.views.processUsername'),
+    ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

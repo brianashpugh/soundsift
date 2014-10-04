@@ -1,12 +1,15 @@
 from django.shortcuts import render, render_to_response
-from django.template import loader, RequestContext
+from django.template import loader, RequestContext, Template, Context
 from django.http import HttpResponse
-import urllib2
+from django.core import serializers
+from urllib import urlopen
 import requests
+import nltk
 from heapq import heappush, heappop
 import soundcloud
 from ..settings import ECHONEST_API_KEY, ECHONEST_CONSUMER_KEY
-from pyechonest import config
+from pyechonest import config, artist
+import pyechonest
 import os
 root_directory = os.path.dirname(os.path.dirname(__file__))
 config.ECHO_NEST_API_KEY = ECHONEST_API_KEY
@@ -15,14 +18,16 @@ config.ECHO_NEST_API_KEY = ECHONEST_API_KEY
 client = soundcloud.Client(client_id="f504baf9fb464877d4e6d69ab6aed100")
 
 def renderEntryPage(request):
-    fil = open(root_directory + '/soundsift_app/web/main.html')
-    return HttpResponse(fil)
+    fil = open(root_directory + "/soundsift_app/web/main.html").read()
+    template = Template(fil)
+    #template = loader.get_template('/soundsift_app/web/main.html')
+    return HttpResponse(template.render(RequestContext(request)))
 
 #This takes in the Souncloud username and returns a dictionary with corresponding SC information about the users'
 # artists that he follows
 def processUsername(request):
     username_dict = request.POST.dict()
-    username = username_dict["sc-name-in"]
+    username = username_dict["name"]
     #this includes the a list with elements as follows:
     # {artist_user_name : artist's user name,
     # description: user's description,
@@ -45,8 +50,8 @@ def processUsername(request):
                                   "description": description,
                                   "img_src": artist.avatar_url})
         offset_value += 50
-    normalized_list = normalize(artist_list)
-    news_list = echonestInfoFetch(normalized_list)
+    #normalized_list = normalize(artist_list)
+    news_list = echonestInfoFetch(artist_list) #will be normalized_list
 
 
 #resultant dictionary is represented as follows:
@@ -95,9 +100,9 @@ def hotttFilter(resultant_list, limit):
 # This takes in the soundcloud user's username and returns a list of the past LIMIT artists who's tracks the user has
 # liked and who is in the user's FOLLOWED_ARTISTS
 def recentlyFavoritedArtists(username, followed_artists, limit):
-    offset_limit = 0
+    offset_limit = 50 if limit > 50 else limit
     favorite_artist_counts = {}
     while True:
-        favorites = client.get('users/' + username + '/favorites', offset=limit)
+        favorites = client.get('users/' + username + '/favorites', offset=offset_limit)
 
 # Create your views here.

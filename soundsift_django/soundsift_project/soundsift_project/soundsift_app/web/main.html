@@ -1,7 +1,8 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
-	<link type="text/css" rel="stylesheet" href="main.css">
+	<link type="text/css" rel="stylesheet" href="{% static "main.css" %}">
 	<link href='http://fonts.googleapis.com/css?family=Libre+Baskerville' rel='stylesheet' type='text/css'>
 	<script type="text/javascript">
  function FocusOnInput()
@@ -13,10 +14,10 @@
 <body onload="FocusOnInput()">
 	<div class="text-centered wraps">
 		<p>well hey, so could you tell us your soundcloud?</p>
-		<img src="cloud.png" class="cloud">
-		<form class="sc-name" method="POST" action="process_username">
-			<label for="name">it's</label>
-			<input type="text" name="name" class="sc-name-in" id="sc-name-in"></input>
+		<img src="{% static "cloud.png" %}" class="cloud">
+		<form class="sc-name" method="POST" action="process_username">{% csrf_token %}
+			<label for="sc-name-in">it's</label>
+			<input type="text" name="name" class="sc-name-in" id="sc-name-in" value="{{default_value}}"></input>
 		</form>
 	</div>
 </body>
