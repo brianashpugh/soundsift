@@ -1,5 +1,5 @@
 from django.shortcuts import render, render_to_response
-from django.template import loader, RequestContext,
+from django.template import loader, RequestContext
 from django.http import HttpResponse
 import urllib2
 import requests
@@ -7,14 +7,16 @@ import heapq
 import soundcloud
 from ..settings import ECHONEST_API_KEY, ECHONEST_CONSUMER_KEY
 from pyechonest import config
+import os
+root_directory = os.path.dirname(os.path.dirname(__file__))
 config.ECHO_NEST_API_KEY = ECHONEST_API_KEY
 
 
 client = soundcloud.Client(client_id="f504baf9fb464877d4e6d69ab6aed100")
 
 def renderEntryPage(request):
-    template = loader.get_template('web/main.html')
-    return HttpResponse(render_to_response(template))
+    fil = open(root_directory + '/soundsift_app/web/main.html')
+    return HttpResponse(fil)
 
 def processUsername(request):
     username_dict = request.POST.dict()
