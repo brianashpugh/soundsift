@@ -11,4 +11,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
     #soundsift.com/
-    (r'^process_username', 'soundsift_app.views.processUsername
+    (r'^entry_page', 'soundsift_app.views.renderEntryPage'),
+    (r'^process_username', 'soundsift_app.views.processUsername')
+    )
