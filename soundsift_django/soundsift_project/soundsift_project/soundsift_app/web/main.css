@@ -1,5 +1,5 @@
 body {
-	font-family: "Libre Baskerville", serif; !important
+	font-family: "Libre Baskerville", serif;
 }
 
 .wraps {
@@ -25,6 +25,11 @@ body {
 .sc-name-in {
 	border: none;
 	background: rgba(0,0,0,0);
+}
+
+.sc-name-in {
+	font-size: 1em;
+	font-family: "Libre Baskerville", serif;
 }
 
 .sc-name-in:focus {

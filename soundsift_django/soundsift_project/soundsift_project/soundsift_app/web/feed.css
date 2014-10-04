@@ -1,6 +1,13 @@
 body {
 	font-size: 100%;
 	font-family: 'Libre Baskerville', serif;
+	background-image: url('back.png');
+}
+
+body h4 {
+	text-align: center;
+	background-color: rgb(255,255,255);
+	border-radius: 2px;
 }
 
 .feed-container {
@@ -8,9 +15,13 @@ body {
 }
 
 .story-elem {
-	margin: 1em;
+	background-color: rgba(255,255,255,.95);
+	padding: .5em .5em;
+	border-radius: 2px;
+	margin: .5em;
 	float: left;
 	width: calc(33.3% - 2em);
+	box-shadow: 0px 0px 5px #BBB;
 }
 
 .story-head {
@@ -41,6 +52,10 @@ body {
 .story-title {
 	text-align: right;
 	margin-right: .5em;
+}
+
+.story-title h3 {
+	margin-top: 3px;
 }
 
 .story-preview {
