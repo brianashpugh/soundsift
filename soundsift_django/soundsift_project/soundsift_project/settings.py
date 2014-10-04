@@ -8,10 +8,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
+#ECHONEST INFO:
+#API KEY:  QWGHNEBW6H7IDIUB1
+#CONSUMER KEY:  002127d5698b61312c865e279befe1e3
+#SHARED SECRET:   tJ9ZiZs7R6O48d+UzbLOgA
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
+ECHONEST_API_KEY = "QWGHNEBW6H7IDIUB1"
+ECHONEST_CONSUMER_KEY = "002127d5698b61312c865e279befe1e3"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -26,6 +32,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'soundsift_project')]
 
 # Application definition
 
@@ -36,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'soundsift_project.soundsift_app'
 )
 
 MIDDLEWARE_CLASSES = (
