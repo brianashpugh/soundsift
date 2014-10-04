@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link type="text/css" rel="stylesheet" href="main.css">
+	<link href='http://fonts.googleapis.com/css?family=Libre+Baskerville' rel='stylesheet' type='text/css'>
+	<script type="text/javascript">
+ function FocusOnInput()
+ {
+	 document.getElementById("sc-name-in").focus();
+ }
+ </script>
 </head>
-<body>
-	<div class="text-centered">
+<body onload="FocusOnInput()">
+	<div class="text-centered wraps">
 		<p>well hey, so could you tell us your soundcloud?</p>
-		<form>
-			<input type="text" class="sc-name-in" placeholder="soundcloud name?"></input>
+		<img src="cloud.png" class="cloud">
+		<form class="sc-name" method="POST" action="process_username">
+			<label for="name">it's</label>
+			<input type="text" name="name" class="sc-name-in" id="sc-name-in"></input>
 		</form>
 	</div>
 </body>
