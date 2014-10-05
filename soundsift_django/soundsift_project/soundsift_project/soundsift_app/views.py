@@ -5,7 +5,7 @@ from django.core import serializers
 from urllib import urlopen
 import requests
 import nltk
-from heapq import heappush, heappop
+from heapq import heappush, heappop, heapify
 import soundcloud
 from ..settings import ECHONEST_API_KEY, ECHONEST_CONSUMER_KEY
 from pyechonest import config, artist
@@ -34,6 +34,7 @@ def processUsername(request):
     # full_name: user's full_name}
     artist_list = []
     offset_value = 0
+    artist_dict = {}
     while True:
         followings = client.get('users/' + username + '/followings', offset=offset_value)
         if len(followings) <= 0:
@@ -49,9 +50,30 @@ def processUsername(request):
             artist_list.append({"artist_user_name": artist.username,
                                   "description": description,
                                   "img_src": artist.avatar_url})
+            artist_dict[artist.username] = (description, artist.avatar_url)
         offset_value += 50
     #normalized_list = normalize(artist_list)
-    news_list = echonestInfoFetch(artist_list) #will be normalized_list
+    based_on_hotttnesss = True
+    based_on_favorites = False
+    if based_on_favorites:
+        favorites = recentlyFavoritedArtists(username, 50) #limit also set to 50
+        intersection = set([art["artist_user_name"] for art in artist_list]) & set(favorites)
+        relevant_artist_list = []
+        for pop_artist in list(intersection):
+            dic = {"artist_user_name": pop_artist,
+                   "description": artist_dict[pop_artist][0],
+                   "img_src": artist_dict[pop_artist[1]]
+            }
+            relevant_artist_list.append(dic)
+        artist_list = relevant_artist_list
+    #news_list = echonestInfoFetch(artist_list, 50)
+    news_list = echonestInfoFetch(artist_list, 50, based_on_hotttnesss) #will be normalized_list, and limit should be adjusted to whatever our max query bandwidth can be
+    context_dict = {"news_list": news_list,
+                    "username": username}
+    fil = open(root_directory + "/soundsift_app/web/feed.html").read()
+    template = Template(fil)
+    context = RequestContext(request, context_dict)
+    return HttpResponse(template.render(context))
 
 
 #resultant dictionary is represented as follows:
@@ -60,7 +82,7 @@ def processUsername(request):
 # news_content: the news' content
 # news_url: the news' url
 # img_src: the artist's sc img
-def echonestInfoFetch(artist_list):
+def echonestInfoFetch(artist_list, limit, based_on_hotttnesss):
     resultant_list = []
     for artist_dict in artist_list:
         resultant_dictionary = {}
@@ -79,6 +101,8 @@ def echonestInfoFetch(artist_list):
         resultant_dictionary["img_src"] = artist_dict["img_src"]
         resultant_dictionary["hotttnesss"] = artist_object.get_hotttnesss()
         resultant_list.append(resultant_dictionary)
+    if based_on_hotttnesss:
+        resultant_list = hotttFilter(resultant_list, limit)
     return resultant_list
 
 #this takes in a list of the artist's info (including the news content/title of most recent article as well)
@@ -97,12 +121,48 @@ def hotttFilter(resultant_list, limit):
     return most_popular_list
 
 
-# This takes in the soundcloud user's username and returns a list of the past LIMIT artists who's tracks the user has
+# This takes in the soundcloud user's username and returns a list of the past LIMIT artists who produced tracks that the user has
 # liked and who is in the user's FOLLOWED_ARTISTS
-def recentlyFavoritedArtists(username, followed_artists, limit):
+# eventually should implement a prio queue which tracks the counts and only has a max length of some limit
+def recentlyFavoritedArtists(username, limit):
     offset_limit = 50 if limit > 50 else limit
-    favorite_artist_counts = {}
+    queue = PrioQueueWithLimit()
     while True:
-        favorites = client.get('users/' + username + '/favorites', offset=offset_limit)
+        favorite_tracks = client.get('users/' + username + '/favorites', offset=offset_limit)
+        for favorite_track in favorite_tracks:
+            artist_name = favorite_track.user["username"]
+            queue.push(artist_name)
+        if offset_limit == limit:
+            break
+        offset_limit = offset_limit + 0 if limit - offset_limit > 50 else limit
+    return queue.return_top(limit)
 
 # Create your views here.
+class PrioQueueWithLimit():
+    def __init__(self):
+        self.queue = [] #stores a tuple with (count first, name of artist)
+        self.queue_names = {}
+        self.count = 0
+    def push(self, artist_name):
+        if artist_name in self.queue_names:
+            index = self.queue.index((self.queue_names[artist_name], artist_name))
+            popped_item = self.queue[index]
+            self.queue = self.queue[:index] + self.queue[index + 1:] #remove item from heap
+            heapify(self.queue)
+            heappush(self.queue, (popped_item[0] - 1, artist_name))
+            self.queue_names[artist_name] -= 1
+        else:
+            heappush(self.queue, (-1, artist_name))
+            self.queue_names[artist_name] = -1
+            self.count += 1
+    def pop(self):
+        return heappop(self.queue)
+    def return_top(self, limit):
+        counter = 0
+        return_list = []
+        while counter < limit and counter < self.count:
+            return_list.append(heappop(self.queue)[1])
+            counter += 1
+        return return_list
+    def is_in(self, item):
+        return item in self.queue
