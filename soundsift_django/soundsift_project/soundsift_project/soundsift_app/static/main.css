@@ -1,11 +1,14 @@
 body {
 	font-family: "Libre Baskerville", serif;
+	margin: 0;
 }
 
 .sinevas {
 	position: fixed;
 	width: 100%;
 	height: 100%;
+	z-index: -1;
+	top: 0;
 }
 
 .wraps {
@@ -18,14 +21,9 @@ body {
 	text-align: center;
 }
 
-.cloud {
-	margin-top: 3em;
-	width: 50%;
-}
-
 .sc-name {
 	position: relative;
-	top: -140px;
+	top: 100px;
 }
 
 .sc-name-in {
