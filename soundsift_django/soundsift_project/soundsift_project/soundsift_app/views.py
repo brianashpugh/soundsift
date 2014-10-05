@@ -134,6 +134,10 @@ def hotttFilter(resultant_list, limit):
         count += 1
     return most_popular_list
 
+def favoriteKey(username):
+     offset_limit = 0
+     while True:
+        favorite_tracks = client.get('users/' + username + '/favorites', offset=offset_limit)
 
 # This takes in the soundcloud user's username and returns a list of the past LIMIT artists who produced tracks that the user has
 # liked and who is in the user's FOLLOWED_ARTISTS
