@@ -15,6 +15,8 @@
 		var currPath = new Array(41)
 		var amplitude = 0
 
+		// load animation
+		var animation = document.getElementById('animation')
 
 		var addEnergy = function(e) {
 			var currX = e.clientX
@@ -87,10 +89,26 @@
 			setTimeout(function() {computePath(currPath)},50)
 		}
 
-	 document.getElementById("sc-name-in").focus();
+		document.getElementById("sc-name-in").focus();
 		window.onmousemove = addEnergy
 		init()
 		decayWave()
 		computePath()
+
+		var renderLoadScreen = function() {
+			document.body.style.visibility = 'hidden'
+			animation.style.visibility = 'visible'
+			toggleLilBAtAllCosts()
+		}
+
+		var toggleLilBAtAllCosts = function() {
+			animation.setAttribute('src', '/static/protectlilbb.png')
+			setTimeout(function() {
+				animation.setAttribute('src', '/static/protectlilbblink.png')
+				setTimeout(toggleLilBAtAllCosts, 600)
+			}, 600)
+		}
+
+		document.getElementById('sc-name').addEventListener('submit', renderLoadScreen, false)
 	}
 })();

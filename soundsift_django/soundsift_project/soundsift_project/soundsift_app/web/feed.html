@@ -7,8 +7,6 @@
 </head>
 <body>
 	<h4>feed 4 {{username}}</h4>
-	<canvas class="sinevas">
-	</canvas>
 	<div class="feed-container">
 		{% for news_story in news_list %}
 		<div class="story-elem" onclick="location.href='{{news_story.news_url}}';" style="cursor: pointer;">
