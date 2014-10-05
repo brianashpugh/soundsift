@@ -54,20 +54,21 @@ def processUsername(request):
         offset_value += 50
     #normalized_list = normalize(artist_list)
     based_on_hotttnesss = True
-    based_on_favorites = False
+    based_on_favorites = True
     if based_on_favorites:
-        favorites = recentlyFavoritedArtists(username, 50) #limit also set to 50
+        favorites = recentlyFavoritedArtists(username, 200, 20) #limit also set to 50
         intersection = set([art["artist_user_name"] for art in artist_list]) & set(favorites)
         relevant_artist_list = []
         for pop_artist in list(intersection):
             dic = {"artist_user_name": pop_artist,
                    "description": artist_dict[pop_artist][0],
-                   "img_src": artist_dict[pop_artist[1]]
+                   "img_src": artist_dict[pop_artist][1]
             }
             relevant_artist_list.append(dic)
-        artist_list = relevant_artist_list
+        if len(artist_list) < 10: #there needs to be enough artists that we can find news articles
+            artist_list = relevant_artist_list
     #news_list = echonestInfoFetch(artist_list, 50)
-    news_list = echonestInfoFetch(artist_list, 50, based_on_hotttnesss) #will be normalized_list, and limit should be adjusted to whatever our max query bandwidth can be
+    news_list = echonestInfoFetch(artist_list[:30], 20, based_on_hotttnesss) #EVENTUALLY ARTIST_LIST SHOULD NOT BE SUBLISTED, BUT IT OVERSEARCHES THE API ... will be normalized_list, and limit should be adjusted to whatever our max query bandwidth can be
     context_dict = {"news_list": news_list,
                     "username": username}
     fil = open(root_directory + "/soundsift_app/web/feed.html").read()
@@ -96,7 +97,7 @@ def echonestInfoFetch(artist_list, limit, based_on_hotttnesss):
         if not news_dict:
             continue
         resultant_dictionary["news_title"] = news_dict["name"]
-        resultant_dictionary["news_content"] = news_dict["summary"]
+        resultant_dictionary["news_content"] = cutoff_at_last_word(news_dict["summary"])
         resultant_dictionary["news_url"] = news_dict["url"]
         resultant_dictionary["img_src"] = artist_dict["img_src"]
         resultant_dictionary["hotttnesss"] = artist_object.get_hotttnesss()
@@ -105,18 +106,31 @@ def echonestInfoFetch(artist_list, limit, based_on_hotttnesss):
         resultant_list = hotttFilter(resultant_list, limit)
     return resultant_list
 
+def cutoff_at_last_word(paragraph):
+    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if len(paragraph) < 399 or paragraph[399] not in alphabet:
+        return paragraph[:400]
+    else:
+        length = len(paragraph)
+        counter = 400
+        while counter < length:
+            if paragraph[counter] not in alphabet:
+                break
+            counter += 1
+        return paragraph[:counter + 1]
 #this takes in a list of the artist's info (including the news content/title of most recent article as well)
 # and returns a list of the top LIMIT most popular artists as determined by "hotttness" level
 def hotttFilter(resultant_list, limit):
     #flips the order of the prio queue so those with the highest hotttness are brought to the front
     queue = []
+    limit = limit if len(resultant_list) > limit else len(resultant_list)
     for artist_dict in resultant_list:
         heappush(queue, (-artist_dict["hotttnesss"], artist_dict))
     count = 0
     most_popular_list = []
     while count < limit:
         item  = heappop(queue)
-        most_popular_list.append(item)
+        most_popular_list.append(item[1])
         count += 1
     return most_popular_list
 
@@ -124,18 +138,19 @@ def hotttFilter(resultant_list, limit):
 # This takes in the soundcloud user's username and returns a list of the past LIMIT artists who produced tracks that the user has
 # liked and who is in the user's FOLLOWED_ARTISTS
 # eventually should implement a prio queue which tracks the counts and only has a max length of some limit
-def recentlyFavoritedArtists(username, limit):
-    offset_limit = 50 if limit > 50 else limit
+def recentlyFavoritedArtists(username, song_limit, artist_limit):
+    offset_limit = 50 if song_limit > 50 else song_limit
     queue = PrioQueueWithLimit()
     while True:
         favorite_tracks = client.get('users/' + username + '/favorites', offset=offset_limit)
+        song_limit = len(favorite_tracks) if len(favorite_tracks) < song_limit else song_limit
         for favorite_track in favorite_tracks:
             artist_name = favorite_track.user["username"]
             queue.push(artist_name)
-        if offset_limit == limit:
+        if offset_limit == song_limit:
             break
-        offset_limit = offset_limit + 0 if limit - offset_limit > 50 else limit
-    return queue.return_top(limit)
+        offset_limit = offset_limit + 0 if song_limit - offset_limit > 50 else song_limit
+    return queue.return_top(artist_limit)
 
 # Create your views here.
 class PrioQueueWithLimit():

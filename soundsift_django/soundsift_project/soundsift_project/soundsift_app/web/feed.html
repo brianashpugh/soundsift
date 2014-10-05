@@ -11,7 +11,7 @@
 	</canvas>
 	<div class="feed-container">
 		{% for news_story in news_list %}
-		<div class="story-elem">
+		<div class="story-elem" onclick="location.href='{{news_story.news_url}}';" style="cursor: pointer;">
 			<div class="story-head">
 				<div class="story-image">
 					<img src="{{news_story.img_src}}"></img>
